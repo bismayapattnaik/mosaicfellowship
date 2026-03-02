@@ -21,7 +21,7 @@ class Question(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     assessment_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("assessments.id"), nullable=False, index=True)
     order_index: Mapped[int] = mapped_column(Integer, nullable=False)
-    question_type: Mapped[QuestionType] = mapped_column(SAEnum(QuestionType), nullable=False)
+    question_type: Mapped[QuestionType] = mapped_column(SAEnum(QuestionType, values_callable=lambda x: [e.value for e in x]), nullable=False)
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
     options: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # For MCQ: list of option strings
     correct_option_index: Mapped[int | None] = mapped_column(Integer, nullable=True)  # For MCQ

@@ -17,17 +17,14 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Enums
-    userrole = sa.Enum("recruiter", "candidate", "admin", name="userrole")
+    userrole = postgresql.ENUM("recruiter", "candidate", "admin", name="userrole", create_type=False)
+    questiontype = postgresql.ENUM("mcq", "short_answer", "scenario", "mini_case", name="questiontype", create_type=False)
+    candidatestatus = postgresql.ENUM("invited", "in_progress", "submitted", "scored", "expired", name="candidatestatus", create_type=False)
+    recommendation = postgresql.ENUM("advance", "consider", "reject", name="recommendation", create_type=False)
+
     userrole.create(op.get_bind(), checkfirst=True)
-
-    questiontype = sa.Enum("mcq", "short_answer", "scenario", "mini_case", name="questiontype")
     questiontype.create(op.get_bind(), checkfirst=True)
-
-    candidatestatus = sa.Enum("invited", "in_progress", "submitted", "scored", "expired", name="candidatestatus")
     candidatestatus.create(op.get_bind(), checkfirst=True)
-
-    recommendation = sa.Enum("advance", "consider", "reject", name="recommendation")
     recommendation.create(op.get_bind(), checkfirst=True)
 
     # Users
@@ -201,7 +198,7 @@ def downgrade() -> None:
     op.drop_table("jobs")
     op.drop_table("users")
 
-    sa.Enum(name="recommendation").drop(op.get_bind(), checkfirst=True)
-    sa.Enum(name="candidatestatus").drop(op.get_bind(), checkfirst=True)
-    sa.Enum(name="questiontype").drop(op.get_bind(), checkfirst=True)
-    sa.Enum(name="userrole").drop(op.get_bind(), checkfirst=True)
+    postgresql.ENUM(name="recommendation").drop(op.get_bind(), checkfirst=True)
+    postgresql.ENUM(name="candidatestatus").drop(op.get_bind(), checkfirst=True)
+    postgresql.ENUM(name="questiontype").drop(op.get_bind(), checkfirst=True)
+    postgresql.ENUM(name="userrole").drop(op.get_bind(), checkfirst=True)

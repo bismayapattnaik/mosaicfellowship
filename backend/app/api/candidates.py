@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.db.session import get_db
@@ -48,8 +48,8 @@ async def invite_bulk(payload: CandidateBulkInvite, db: AsyncSession = Depends(g
 
 @router.post("/start", response_model=CandidateTestView)
 async def start_candidate_test(
-    session_token: str,
-    request: Request,
+    session_token: str = Query(...),
+    request: Request = None,
     db: AsyncSession = Depends(get_db),
 ):
     ip_address = request.client.host if request.client else None

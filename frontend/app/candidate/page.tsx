@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   startTest,
@@ -11,6 +11,14 @@ import {
 import type { CandidateTestView, TestQuestion, AnswerSubmission } from "@/lib/types";
 
 export default function CandidateTestPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>}>
+      <CandidateTestContent />
+    </Suspense>
+  );
+}
+
+function CandidateTestContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
 

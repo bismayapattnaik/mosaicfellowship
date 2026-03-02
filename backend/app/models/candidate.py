@@ -24,7 +24,7 @@ class Candidate(Base):
     email: Mapped[str] = mapped_column(String(320), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     session_token: Mapped[str] = mapped_column(String(128), unique=True, nullable=False, index=True)
-    status: Mapped[CandidateStatus] = mapped_column(SAEnum(CandidateStatus), default=CandidateStatus.INVITED, nullable=False)
+    status: Mapped[CandidateStatus] = mapped_column(SAEnum(CandidateStatus, values_callable=lambda x: [e.value for e in x]), default=CandidateStatus.INVITED, nullable=False)
     ip_hash: Mapped[str | None] = mapped_column(String(128), nullable=True)
     started_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     submitted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

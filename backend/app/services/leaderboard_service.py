@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.models.candidate import Candidate, CandidateStatus
-from app.models.score import Score
+from app.models.score import Score, Recommendation
 from app.models.response import Response
 from app.models.override import Override
 from app.models.job import Job
@@ -27,7 +27,12 @@ async def get_leaderboard(
     )
 
     if filter_recommendation:
-        query = query.where(Score.recommendation == filter_recommendation)
+        try:
+            rec_enum = Recommendation(filter_recommendation)
+        except ValueError:
+            rec_enum = None
+        if rec_enum:
+            query = query.where(Score.recommendation == rec_enum)
 
     if sort_by == "confidence":
         query = query.order_by(Score.confidence.desc())
