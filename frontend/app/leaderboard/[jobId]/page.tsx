@@ -52,22 +52,23 @@ export default function LeaderboardPage() {
     }
   }
 
-  if (loading) return <div className="p-8 text-gray-500">Loading leaderboard...</div>;
-  if (!data) return <div className="p-8 text-red-500">Failed to load leaderboard</div>;
+  if (loading) return <div className="p-8 text-white/40">Loading leaderboard...</div>;
+  if (!data) return <div className="p-8 text-red-400">Failed to load leaderboard</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="min-h-screen bg-[#0a0a0f] bg-grid">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(124,77,255,0.08),transparent_60%)] pointer-events-none" />
+      <div className="relative max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Leaderboard</h1>
-            <p className="text-gray-500">{data.job_title}</p>
+            <h1 className="text-3xl font-bold text-white">Leaderboard</h1>
+            <p className="text-white/40">{data.job_title}</p>
           </div>
           <div className="flex gap-3">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm"
+              className="bg-white/[0.05] border border-white/[0.1] text-white/70 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500/50"
             >
               <option value="overall_score">Sort by Score</option>
               <option value="confidence">Sort by Confidence</option>
@@ -75,7 +76,7 @@ export default function LeaderboardPage() {
             <select
               value={filterRec}
               onChange={(e) => setFilterRec(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm"
+              className="bg-white/[0.05] border border-white/[0.1] text-white/70 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500/50"
             >
               <option value="">All Recommendations</option>
               <option value="advance">Advance</option>
@@ -84,7 +85,7 @@ export default function LeaderboardPage() {
             </select>
             <button
               onClick={handleExport}
-              className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900"
+              className="px-4 py-2 bg-white/[0.08] text-white/70 border border-white/[0.1] rounded-xl text-sm font-medium hover:bg-white/[0.12] transition-colors"
             >
               Export CSV
             </button>
@@ -94,51 +95,51 @@ export default function LeaderboardPage() {
         <div className="grid grid-cols-3 gap-6">
           {/* Table */}
           <div className="col-span-2">
-            <div className="bg-white rounded-lg border overflow-hidden">
+            <div className="card overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="border-b border-white/[0.08]">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">
+                    <th className="text-left px-4 py-3 font-medium text-white/40">
                       Rank
                     </th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">
+                    <th className="text-left px-4 py-3 font-medium text-white/40">
                       Name
                     </th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">
+                    <th className="text-left px-4 py-3 font-medium text-white/40">
                       Score
                     </th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">
+                    <th className="text-left px-4 py-3 font-medium text-white/40">
                       Recommendation
                     </th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">
+                    <th className="text-left px-4 py-3 font-medium text-white/40">
                       Confidence
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-white/[0.06]">
                   {data.entries.map((entry, idx) => (
                     <tr
                       key={entry.candidate_id}
-                      className={`hover:bg-gray-50 cursor-pointer ${
+                      className={`hover:bg-white/[0.04] cursor-pointer transition-colors ${
                         selectedCandidate?.candidate_id ===
                         entry.candidate_id
-                          ? "bg-brand-50"
+                          ? "bg-brand-500/10"
                           : ""
                       }`}
                       onClick={() => setSelectedCandidate(entry)}
                     >
-                      <td className="px-4 py-3 font-bold text-gray-400">
+                      <td className="px-4 py-3 font-bold text-white/30">
                         #{idx + 1}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-medium">
+                        <div className="font-medium text-white">
                           {entry.candidate_name}
                         </div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-white/30">
                           {entry.candidate_email}
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-bold text-brand-600">
+                      <td className="px-4 py-3 font-bold text-brand-400">
                         {Math.round(entry.overall_score)}
                       </td>
                       <td className="px-4 py-3">
@@ -149,12 +150,12 @@ export default function LeaderboardPage() {
                           }
                         />
                         {entry.override_recommendation && (
-                          <span className="text-xs text-orange-500 ml-1">
+                          <span className="text-xs text-orange-400 ml-1">
                             (overridden)
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-4 py-3 text-white/50">
                         {Math.round(entry.confidence * 100)}%
                       </td>
                     </tr>
@@ -162,7 +163,7 @@ export default function LeaderboardPage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-white/30 mt-2">
               {data.total} candidates scored
             </p>
           </div>
@@ -170,16 +171,16 @@ export default function LeaderboardPage() {
           {/* Detail Panel */}
           <div className="col-span-1">
             {selectedCandidate ? (
-              <div className="bg-white rounded-lg border p-6 sticky top-6">
-                <h3 className="text-lg font-semibold mb-1">
+              <div className="card p-6 sticky top-6">
+                <h3 className="text-lg font-semibold text-white mb-1">
                   {selectedCandidate.candidate_name}
                 </h3>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-white/40 mb-4">
                   {selectedCandidate.candidate_email}
                 </p>
 
                 <div className="text-center mb-4">
-                  <div className="text-4xl font-bold text-brand-600">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-brand-400 to-purple-400 bg-clip-text text-transparent">
                     {Math.round(selectedCandidate.overall_score)}
                   </div>
                   <StatusBadge status={selectedCandidate.recommendation} />
@@ -206,34 +207,34 @@ export default function LeaderboardPage() {
                   }
                 />
 
-                <div className="mt-4 pt-4 border-t">
-                  <h4 className="text-sm font-medium text-green-700 mb-1">
+                <div className="mt-4 pt-4 border-t border-white/[0.08]">
+                  <h4 className="text-sm font-medium text-emerald-400 mb-1">
                     Strengths
                   </h4>
-                  <ul className="text-sm text-gray-600 space-y-1 mb-3">
+                  <ul className="text-sm text-white/50 space-y-1 mb-3">
                     {selectedCandidate.strengths.map((s, i) => (
-                      <li key={i}>+ {s}</li>
+                      <li key={i} className="flex gap-1"><span className="text-emerald-400">+</span> {s}</li>
                     ))}
                   </ul>
-                  <h4 className="text-sm font-medium text-red-700 mb-1">
+                  <h4 className="text-sm font-medium text-red-400 mb-1">
                     Weaknesses
                   </h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
+                  <ul className="text-sm text-white/50 space-y-1">
                     {selectedCandidate.weaknesses.map((w, i) => (
-                      <li key={i}>- {w}</li>
+                      <li key={i} className="flex gap-1"><span className="text-red-400">-</span> {w}</li>
                     ))}
                   </ul>
                 </div>
 
                 <Link
                   href={`/recruiter/jobs/${jobId}/candidates/${selectedCandidate.candidate_id}`}
-                  className="block text-center mt-4 px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700"
+                  className="block text-center mt-4 btn-primary text-sm"
                 >
                   Full Report
                 </Link>
               </div>
             ) : (
-              <div className="bg-white rounded-lg border p-6 text-center text-gray-400">
+              <div className="card p-6 text-center text-white/30">
                 Click a candidate to view details
               </div>
             )}

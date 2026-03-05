@@ -12,7 +12,7 @@ import type { CandidateTestView, TestQuestion, AnswerSubmission } from "@/lib/ty
 
 export default function CandidateTestPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]"><p className="text-white/40">Loading...</p></div>}>
       <CandidateTestContent />
     </Suspense>
   );
@@ -157,12 +157,13 @@ function CandidateTestContent() {
   // --- ENTER TOKEN ---
   if (phase === "enter") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-8">
-        <div className="max-w-md w-full bg-white rounded-lg border p-8">
-          <h1 className="text-2xl font-bold mb-2">Beat Claude Assessment</h1>
-          <p className="text-gray-500 mb-6">Enter your session token to begin</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] bg-grid p-8">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(124,77,255,0.08),transparent_70%)]" />
+        <div className="relative max-w-md w-full card p-8">
+          <h1 className="text-2xl font-bold text-white mb-2">Beat Claude Assessment</h1>
+          <p className="text-white/40 mb-6">Enter your session token to begin</p>
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded text-sm">
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm">
               {error}
             </div>
           )}
@@ -171,12 +172,12 @@ function CandidateTestContent() {
             value={sessionToken}
             onChange={(e) => setSessionToken(e.target.value)}
             placeholder="Session token"
-            className="w-full border rounded-lg px-3 py-2 mb-4"
+            className="input mb-4"
           />
           <button
             onClick={handleStartFlow}
             disabled={loading}
-            className="w-full py-2 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 disabled:opacity-50"
+            className="btn-primary w-full"
           >
             {loading ? "Verifying..." : "Continue"}
           </button>
@@ -188,35 +189,36 @@ function CandidateTestContent() {
   // --- INSTRUCTIONS ---
   if (phase === "instructions") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-8">
-        <div className="max-w-lg w-full bg-white rounded-lg border p-8">
-          <h1 className="text-2xl font-bold mb-4">Assessment Instructions</h1>
-          <ul className="space-y-3 text-sm text-gray-600 mb-6">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] bg-grid p-8">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(124,77,255,0.08),transparent_70%)]" />
+        <div className="relative max-w-lg w-full card p-8">
+          <h1 className="text-2xl font-bold text-white mb-4">Assessment Instructions</h1>
+          <ul className="space-y-3 text-sm text-white/50 mb-6">
             <li className="flex gap-2">
-              <span className="font-bold text-brand-600">1.</span>
-              This is a timed assessment. The timer starts when you click "Begin".
+              <span className="font-bold text-brand-400">1.</span>
+              This is a timed assessment. The timer starts when you click &quot;Begin&quot;.
             </li>
             <li className="flex gap-2">
-              <span className="font-bold text-brand-600">2.</span>
+              <span className="font-bold text-brand-400">2.</span>
               Your answers are auto-saved every 10 seconds.
             </li>
             <li className="flex gap-2">
-              <span className="font-bold text-brand-600">3.</span>
+              <span className="font-bold text-brand-400">3.</span>
               You can navigate between questions freely.
             </li>
             <li className="flex gap-2">
-              <span className="font-bold text-brand-600">4.</span>
+              <span className="font-bold text-brand-400">4.</span>
               Once submitted, you cannot retake the test.
             </li>
             <li className="flex gap-2">
-              <span className="font-bold text-brand-600">5.</span>
+              <span className="font-bold text-brand-400">5.</span>
               Copy-paste activity is monitored.
             </li>
           </ul>
           <button
             onClick={handleBeginTest}
             disabled={loading}
-            className="w-full py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
+            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-50 shadow-[0_0_20px_rgba(52,211,153,0.2)] transition-all"
           >
             {loading ? "Loading test..." : "Begin Assessment"}
           </button>
@@ -228,11 +230,16 @@ function CandidateTestContent() {
   // --- SUBMITTED ---
   if (phase === "submitted") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-8">
-        <div className="max-w-md w-full bg-white rounded-lg border p-8 text-center">
-          <div className="text-5xl mb-4">&#10003;</div>
-          <h1 className="text-2xl font-bold mb-2">Assessment Submitted</h1>
-          <p className="text-gray-500">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] bg-grid p-8">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(124,77,255,0.08),transparent_70%)]" />
+        <div className="relative max-w-md w-full card p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+            <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Assessment Submitted</h1>
+          <p className="text-white/40">
             Thank you for completing the assessment. Your responses have been
             recorded and will be evaluated shortly.
           </p>
@@ -251,26 +258,26 @@ function CandidateTestContent() {
   const isLowTime = timeRemaining < 120;
 
   return (
-    <div className="min-h-screen bg-gray-50" onPaste={handlePaste}>
+    <div className="min-h-screen bg-[#0a0a0f]" onPaste={handlePaste}>
       {/* Header */}
-      <div className="bg-white border-b px-6 py-3 sticky top-0 z-10">
+      <div className="bg-white/[0.04] backdrop-blur-xl border-b border-white/[0.08] px-6 py-3 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
-            <span className="text-sm font-medium text-gray-500">
+            <span className="text-sm font-medium text-white/40">
               {testData.job_title}
             </span>
-            <span className="mx-2 text-gray-300">|</span>
-            <span className="text-sm text-gray-500">
+            <span className="mx-2 text-white/20">|</span>
+            <span className="text-sm text-white/40">
               {testData.candidate_name}
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-white/40">
               {answeredCount}/{questions.length} answered
             </div>
             <div
               className={`text-lg font-mono font-bold ${
-                isLowTime ? "text-red-600 animate-pulse" : "text-gray-700"
+                isLowTime ? "text-red-400 animate-pulse" : "text-white/70"
               }`}
             >
               {formatTime(timeRemaining)}
@@ -278,7 +285,7 @@ function CandidateTestContent() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="px-4 py-1.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
+              className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-50 shadow-[0_0_15px_rgba(52,211,153,0.2)] transition-all"
             >
               {loading ? "Submitting..." : "Submit"}
             </button>
@@ -287,32 +294,32 @@ function CandidateTestContent() {
       </div>
 
       {/* Progress */}
-      <div className="w-full h-1 bg-gray-200">
+      <div className="w-full h-1 bg-white/[0.06]">
         <div
-          className="h-full bg-brand-500 transition-all"
+          className="h-full bg-gradient-to-r from-brand-500 to-purple-500 transition-all shadow-[0_0_8px_rgba(124,77,255,0.3)]"
           style={{ width: `${progress}%` }}
         />
       </div>
 
       {error && (
-        <div className="max-w-4xl mx-auto mt-4 p-3 bg-red-50 text-red-700 rounded text-sm">
+        <div className="max-w-4xl mx-auto mt-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm">
           {error}
         </div>
       )}
 
       {/* Question */}
       <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-white rounded-lg border p-6">
+        <div className="card p-6">
           <div className="flex items-center gap-3 mb-4">
-            <span className="px-2 py-1 bg-brand-50 text-brand-700 rounded text-xs font-medium">
+            <span className="px-2 py-1 bg-brand-500/15 text-brand-300 rounded-lg text-xs font-medium">
               {currentQuestion.question_type.replace("_", " ")}
             </span>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-white/30">
               Question {currentIndex + 1} of {questions.length}
             </span>
           </div>
 
-          <p className="text-lg mb-6 whitespace-pre-wrap">
+          <p className="text-lg text-white/80 mb-6 whitespace-pre-wrap">
             {currentQuestion.question_text}
           </p>
 
@@ -327,16 +334,16 @@ function CandidateTestContent() {
                     <button
                       key={idx}
                       onClick={() => updateAnswer(currentQuestion, idx)}
-                      className={`w-full text-left p-4 rounded-lg border-2 transition ${
+                      className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
                         selected
-                          ? "border-brand-500 bg-brand-50"
-                          : "border-gray-200 hover:border-gray-300"
+                          ? "border-brand-500 bg-brand-500/10 shadow-[0_0_15px_rgba(124,77,255,0.1)]"
+                          : "border-white/[0.08] hover:border-white/[0.15] bg-white/[0.02]"
                       }`}
                     >
-                      <span className="font-medium mr-3">
+                      <span className="font-medium mr-3 text-white/50">
                         {String.fromCharCode(65 + idx)}.
                       </span>
-                      {opt}
+                      <span className="text-white/70">{opt}</span>
                     </button>
                   );
                 })}
@@ -350,7 +357,7 @@ function CandidateTestContent() {
               onChange={(e) => updateAnswer(currentQuestion, e.target.value)}
               rows={8}
               placeholder="Type your answer here..."
-              className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+              className="input resize-y"
             />
           )}
         </div>
@@ -363,7 +370,7 @@ function CandidateTestContent() {
               setCurrentIndex((prev) => Math.max(0, prev - 1));
             }}
             disabled={currentIndex === 0}
-            className="px-4 py-2 border rounded-lg text-sm font-medium disabled:opacity-30 hover:bg-gray-100"
+            className="px-4 py-2 border border-white/[0.1] rounded-xl text-sm font-medium text-white/50 disabled:opacity-30 hover:bg-white/[0.05] transition-colors"
           >
             Previous
           </button>
@@ -376,12 +383,12 @@ function CandidateTestContent() {
                   questionStartTime.current = Date.now();
                   setCurrentIndex(idx);
                 }}
-                className={`w-8 h-8 rounded text-xs font-medium ${
+                className={`w-8 h-8 rounded-lg text-xs font-medium transition-all ${
                   idx === currentIndex
-                    ? "bg-brand-600 text-white"
+                    ? "bg-gradient-to-r from-brand-500 to-purple-500 text-white shadow-[0_0_10px_rgba(124,77,255,0.3)]"
                     : answers[q.id]
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-100 text-gray-500"
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "bg-white/[0.06] text-white/30"
                 }`}
               >
                 {idx + 1}
@@ -397,7 +404,7 @@ function CandidateTestContent() {
               );
             }}
             disabled={currentIndex === questions.length - 1}
-            className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium disabled:opacity-30 hover:bg-brand-700"
+            className="btn-primary text-sm disabled:opacity-30"
           >
             Next
           </button>

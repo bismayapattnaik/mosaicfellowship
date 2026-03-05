@@ -52,12 +52,12 @@ export default function RecruiterDashboard() {
   return (
     <div className="animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Recruiter Dashboard</h1>
-        <p className="text-slate-500 mt-1">Create jobs and manage your hiring pipeline</p>
+        <h1 className="text-2xl font-bold text-white">Recruiter Dashboard</h1>
+        <p className="text-white/40 mt-1">Create jobs and manage your hiring pipeline</p>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-start gap-3">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm flex items-start gap-3">
           <svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clipRule="evenodd" /></svg>
           <span>{error}</span>
         </div>
@@ -66,8 +66,8 @@ export default function RecruiterDashboard() {
       {step === "setup" && (
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="card p-8">
-            <h2 className="text-lg font-semibold text-slate-900 mb-1">New here?</h2>
-            <p className="text-sm text-slate-500 mb-6">Create your recruiter account to get started</p>
+            <h2 className="text-lg font-semibold text-white mb-1">New here?</h2>
+            <p className="text-sm text-white/40 mb-6">Create your recruiter account to get started</p>
             <form onSubmit={handleSetup} className="space-y-4">
               <div>
                 <label className="label">Full Name</label>
@@ -84,8 +84,8 @@ export default function RecruiterDashboard() {
           </div>
 
           <div className="card p-8">
-            <h2 className="text-lg font-semibold text-slate-900 mb-1">Returning user?</h2>
-            <p className="text-sm text-slate-500 mb-6">Enter your Recruiter ID to continue</p>
+            <h2 className="text-lg font-semibold text-white mb-1">Returning user?</h2>
+            <p className="text-sm text-white/40 mb-6">Enter your Recruiter ID to continue</p>
             <div className="space-y-4">
               <div>
                 <label className="label">Recruiter ID</label>
@@ -101,19 +101,19 @@ export default function RecruiterDashboard() {
 
       {step === "create" && (
         <div className="max-w-2xl">
-          <div className="flex items-center gap-3 mb-6 p-3 bg-indigo-50 rounded-xl">
-            <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
+          <div className="flex items-center gap-3 mb-6 p-3 bg-brand-500/10 rounded-xl border border-brand-500/20">
+            <div className="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" /></svg>
             </div>
             <div>
-              <span className="text-sm font-medium text-indigo-900">Signed in as </span>
-              <code className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-mono">{recruiterId.substring(0, 8)}...</code>
+              <span className="text-sm font-medium text-brand-300">Signed in as </span>
+              <code className="text-xs bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono">{recruiterId.substring(0, 8)}...</code>
             </div>
           </div>
 
           <div className="card p-8">
-            <h2 className="text-lg font-semibold text-slate-900 mb-1">Create New Job</h2>
-            <p className="text-sm text-slate-500 mb-6">Paste a job description and we will generate a tailored assessment</p>
+            <h2 className="text-lg font-semibold text-white mb-1">Create New Job</h2>
+            <p className="text-sm text-white/40 mb-6">Paste a job description and we will generate a tailored assessment</p>
             <form onSubmit={handleCreateJob} className="space-y-5">
               <div>
                 <label className="label">Job Title</label>
@@ -122,7 +122,7 @@ export default function RecruiterDashboard() {
               <div>
                 <label className="label">Job Description</label>
                 <textarea value={jdText} onChange={(e) => setJdText(e.target.value)} rows={14} className="input resize-y" placeholder="Paste the full job description here. Include responsibilities, requirements, qualifications..." required minLength={50} />
-                <p className="text-xs text-slate-400 mt-1.5">Minimum 50 characters. The more detail you provide, the better the assessment.</p>
+                <p className="text-xs text-white/30 mt-1.5">Minimum 50 characters. The more detail you provide, the better the assessment.</p>
               </div>
               <button type="submit" disabled={loading} className="btn-primary">
                 {loading ? "Creating..." : "Create Job & Continue"}
