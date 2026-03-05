@@ -22,8 +22,21 @@ export async function createUser(data: {
   return request("/users", { method: "POST", body: JSON.stringify(data) });
 }
 
+export async function loginUser(email: string) {
+  return request("/users/login", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
 export async function getUser(userId: string) {
   return request(`/users/${userId}`);
+}
+
+export async function getUserStats(userId: string) {
+  return request<{ total_jobs: number; total_candidates: number; total_scored: number }>(
+    `/users/${userId}/stats`
+  );
 }
 
 // Jobs

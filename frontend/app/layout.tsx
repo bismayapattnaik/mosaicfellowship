@@ -22,11 +22,13 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="h-full font-sans bg-[#0a0a0f] text-white">{children}</body>
+      <body className="h-full font-sans bg-[#080808] text-[#F0F0F0] antialiased overflow-x-hidden">
+        {children}
+      </body>
     </html>
   );
 }

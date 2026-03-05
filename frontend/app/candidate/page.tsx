@@ -12,7 +12,7 @@ import type { CandidateTestView, TestQuestion, AnswerSubmission } from "@/lib/ty
 
 export default function CandidateTestPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]"><p className="text-white/40">Loading...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#080808]"><p className="text-zinc-500 font-mono text-xs uppercase tracking-widest animate-pulse">Loading...</p></div>}>
       <CandidateTestContent />
     </Suspense>
   );
@@ -157,13 +157,19 @@ function CandidateTestContent() {
   // --- ENTER TOKEN ---
   if (phase === "enter") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] bg-grid p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(124,77,255,0.08),transparent_70%)]" />
+      <div className="min-h-screen flex items-center justify-center bg-[#080808] bg-grid p-8">
         <div className="relative max-w-md w-full card p-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Beat Claude Assessment</h1>
-          <p className="text-white/40 mb-6">Enter your session token to begin</p>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="bg-acid text-black px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest">
+              Assessment Portal
+            </div>
+          </div>
+          <h1 className="font-heading font-bold text-4xl uppercase tracking-tighter text-white mb-2">
+            Beat Claude
+          </h1>
+          <p className="text-zinc-500 text-sm font-mono mb-6">Enter your session token to begin</p>
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm">
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
               {error}
             </div>
           )}
@@ -171,13 +177,13 @@ function CandidateTestContent() {
             type="text"
             value={sessionToken}
             onChange={(e) => setSessionToken(e.target.value)}
-            placeholder="Session token"
+            placeholder="SESSION TOKEN"
             className="input mb-4"
           />
           <button
             onClick={handleStartFlow}
             disabled={loading}
-            className="btn-primary w-full"
+            className="btn-acid w-full"
           >
             {loading ? "Verifying..." : "Continue"}
           </button>
@@ -189,36 +195,37 @@ function CandidateTestContent() {
   // --- INSTRUCTIONS ---
   if (phase === "instructions") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] bg-grid p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(124,77,255,0.08),transparent_70%)]" />
+      <div className="min-h-screen flex items-center justify-center bg-[#080808] bg-grid p-8">
         <div className="relative max-w-lg w-full card p-8">
-          <h1 className="text-2xl font-bold text-white mb-4">Assessment Instructions</h1>
-          <ul className="space-y-3 text-sm text-white/50 mb-6">
-            <li className="flex gap-2">
-              <span className="font-bold text-brand-400">1.</span>
-              This is a timed assessment. The timer starts when you click &quot;Begin&quot;.
+          <h1 className="font-heading font-bold text-4xl uppercase tracking-tighter text-white mb-6">
+            Instructions
+          </h1>
+          <ul className="space-y-3 text-sm text-zinc-400 mb-8 font-mono">
+            <li className="flex gap-3">
+              <span className="text-acid font-bold">01</span>
+              This is a timed assessment. The timer starts when you click Begin.
             </li>
-            <li className="flex gap-2">
-              <span className="font-bold text-brand-400">2.</span>
+            <li className="flex gap-3">
+              <span className="text-acid font-bold">02</span>
               Your answers are auto-saved every 10 seconds.
             </li>
-            <li className="flex gap-2">
-              <span className="font-bold text-brand-400">3.</span>
+            <li className="flex gap-3">
+              <span className="text-acid font-bold">03</span>
               You can navigate between questions freely.
             </li>
-            <li className="flex gap-2">
-              <span className="font-bold text-brand-400">4.</span>
+            <li className="flex gap-3">
+              <span className="text-acid font-bold">04</span>
               Once submitted, you cannot retake the test.
             </li>
-            <li className="flex gap-2">
-              <span className="font-bold text-brand-400">5.</span>
+            <li className="flex gap-3">
+              <span className="text-acid font-bold">05</span>
               Copy-paste activity is monitored.
             </li>
           </ul>
           <button
             onClick={handleBeginTest}
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-50 shadow-[0_0_20px_rgba(52,211,153,0.2)] transition-all"
+            className="btn-acid w-full"
           >
             {loading ? "Loading test..." : "Begin Assessment"}
           </button>
@@ -230,18 +237,16 @@ function CandidateTestContent() {
   // --- SUBMITTED ---
   if (phase === "submitted") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] bg-grid p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(124,77,255,0.08),transparent_70%)]" />
+      <div className="min-h-screen flex items-center justify-center bg-[#080808] bg-grid p-8">
         <div className="relative max-w-md w-full card p-8 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
-            <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
+          <div className="w-16 h-16 mx-auto mb-4 border-2 border-acid flex items-center justify-center">
+            <span className="text-acid text-3xl font-heading font-bold">✓</span>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Assessment Submitted</h1>
-          <p className="text-white/40">
-            Thank you for completing the assessment. Your responses have been
-            recorded and will be evaluated shortly.
+          <h1 className="font-heading font-bold text-4xl uppercase tracking-tighter text-white mb-2">
+            Submitted
+          </h1>
+          <p className="text-zinc-500 text-sm font-mono">
+            Your responses have been recorded and will be evaluated shortly.
           </p>
         </div>
       </div>
@@ -258,26 +263,26 @@ function CandidateTestContent() {
   const isLowTime = timeRemaining < 120;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]" onPaste={handlePaste}>
+    <div className="min-h-screen bg-[#080808]" onPaste={handlePaste}>
       {/* Header */}
-      <div className="bg-white/[0.04] backdrop-blur-xl border-b border-white/[0.08] px-6 py-3 sticky top-0 z-10">
+      <div className="bg-[#0A0A0A] border-b border-white/10 px-6 py-3 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div>
-            <span className="text-sm font-medium text-white/40">
+          <div className="flex items-center gap-3">
+            <span className="font-heading font-bold text-sm uppercase tracking-wide text-white">
               {testData.job_title}
             </span>
-            <span className="mx-2 text-white/20">|</span>
-            <span className="text-sm text-white/40">
+            <span className="text-zinc-700">//</span>
+            <span className="text-xs font-mono text-zinc-500">
               {testData.candidate_name}
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-white/40">
-              {answeredCount}/{questions.length} answered
+          <div className="flex items-center gap-6">
+            <div className="text-xs font-mono text-zinc-500 uppercase">
+              {answeredCount}/{questions.length}
             </div>
             <div
               className={`text-lg font-mono font-bold ${
-                isLowTime ? "text-red-400 animate-pulse" : "text-white/70"
+                isLowTime ? "text-red-400 animate-pulse" : "text-acid"
               }`}
             >
               {formatTime(timeRemaining)}
@@ -285,7 +290,7 @@ function CandidateTestContent() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-50 shadow-[0_0_15px_rgba(52,211,153,0.2)] transition-all"
+              className="btn-acid text-xs px-4 py-1.5"
             >
               {loading ? "Submitting..." : "Submit"}
             </button>
@@ -294,32 +299,32 @@ function CandidateTestContent() {
       </div>
 
       {/* Progress */}
-      <div className="w-full h-1 bg-white/[0.06]">
+      <div className="w-full h-0.5 bg-white/5">
         <div
-          className="h-full bg-gradient-to-r from-brand-500 to-purple-500 transition-all shadow-[0_0_8px_rgba(124,77,255,0.3)]"
+          className="h-full bg-acid transition-all"
           style={{ width: `${progress}%` }}
         />
       </div>
 
       {error && (
-        <div className="max-w-4xl mx-auto mt-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm">
+        <div className="max-w-4xl mx-auto mt-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           {error}
         </div>
       )}
 
       {/* Question */}
       <div className="max-w-4xl mx-auto p-6">
-        <div className="card p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="px-2 py-1 bg-brand-500/15 text-brand-300 rounded-lg text-xs font-medium">
+        <div className="card p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="px-2 py-0.5 border border-acid/30 text-acid text-[10px] font-mono font-bold uppercase">
               {currentQuestion.question_type.replace("_", " ")}
             </span>
-            <span className="text-sm text-white/30">
+            <span className="text-xs font-mono text-zinc-600 uppercase">
               Question {currentIndex + 1} of {questions.length}
             </span>
           </div>
 
-          <p className="text-lg text-white/80 mb-6 whitespace-pre-wrap">
+          <p className="text-lg text-zinc-200 mb-8 whitespace-pre-wrap leading-relaxed">
             {currentQuestion.question_text}
           </p>
 
@@ -334,16 +339,16 @@ function CandidateTestContent() {
                     <button
                       key={idx}
                       onClick={() => updateAnswer(currentQuestion, idx)}
-                      className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                      className={`w-full text-left p-4 border transition-all ${
                         selected
-                          ? "border-brand-500 bg-brand-500/10 shadow-[0_0_15px_rgba(124,77,255,0.1)]"
-                          : "border-white/[0.08] hover:border-white/[0.15] bg-white/[0.02]"
+                          ? "border-acid bg-acid/5"
+                          : "border-white/10 hover:border-white/20 bg-[#080808]"
                       }`}
                     >
-                      <span className="font-medium mr-3 text-white/50">
+                      <span className={`font-mono font-bold mr-3 ${selected ? "text-acid" : "text-zinc-600"}`}>
                         {String.fromCharCode(65 + idx)}.
                       </span>
-                      <span className="text-white/70">{opt}</span>
+                      <span className="text-zinc-300">{opt}</span>
                     </button>
                   );
                 })}
@@ -370,7 +375,7 @@ function CandidateTestContent() {
               setCurrentIndex((prev) => Math.max(0, prev - 1));
             }}
             disabled={currentIndex === 0}
-            className="px-4 py-2 border border-white/[0.1] rounded-xl text-sm font-medium text-white/50 disabled:opacity-30 hover:bg-white/[0.05] transition-colors"
+            className="btn-secondary text-xs disabled:opacity-30"
           >
             Previous
           </button>
@@ -383,12 +388,12 @@ function CandidateTestContent() {
                   questionStartTime.current = Date.now();
                   setCurrentIndex(idx);
                 }}
-                className={`w-8 h-8 rounded-lg text-xs font-medium transition-all ${
+                className={`w-8 h-8 text-xs font-mono font-bold transition-all ${
                   idx === currentIndex
-                    ? "bg-gradient-to-r from-brand-500 to-purple-500 text-white shadow-[0_0_10px_rgba(124,77,255,0.3)]"
+                    ? "bg-acid text-black"
                     : answers[q.id]
-                    ? "bg-emerald-500/20 text-emerald-400"
-                    : "bg-white/[0.06] text-white/30"
+                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                    : "bg-white/5 text-zinc-600 border border-white/10"
                 }`}
               >
                 {idx + 1}
@@ -404,7 +409,7 @@ function CandidateTestContent() {
               );
             }}
             disabled={currentIndex === questions.length - 1}
-            className="btn-primary text-sm disabled:opacity-30"
+            className="btn-acid text-xs disabled:opacity-30"
           >
             Next
           </button>

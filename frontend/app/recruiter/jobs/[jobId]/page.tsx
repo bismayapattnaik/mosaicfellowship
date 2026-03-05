@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   getJob,
@@ -112,47 +112,47 @@ export default function JobDetailPage() {
     }
   }
 
-  if (loading) return <p className="text-white/40">Loading...</p>;
-  if (!job) return <p className="text-red-400">Job not found</p>;
+  if (loading) return <div className="text-zinc-500 font-mono text-xs uppercase tracking-widest animate-pulse">Loading...</div>;
+  if (!job) return <div className="text-red-400 font-mono text-xs uppercase">Job not found</div>;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl">
-          {error}
+        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
+          <span>!!</span> {error}
         </div>
       )}
       {success && (
-        <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
-          {success}
+        <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center gap-2">
+          <span className="text-acid">✓</span> {success}
         </div>
       )}
 
       {/* Job Header */}
-      <div className="card p-6">
-        <div className="flex items-start justify-between">
+      <div className="border-b border-white/10 pb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <Link href="/recruiter/jobs" className="text-zinc-500 hover:text-white transition-colors font-mono text-xs uppercase">
+            ← Jobs
+          </Link>
+          <div className="w-px h-4 bg-white/20" />
+          <StatusBadge status={job.status} />
+        </div>
+        <div className="flex flex-col md:flex-row md:items-end justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">{job.title}</h1>
-            <div className="flex gap-3 mt-2">
-              <StatusBadge status={job.status} />
-              {job.parsed_domain && (
-                <span className="text-sm text-white/40">
-                  {job.parsed_domain}
-                </span>
-              )}
-              {job.parsed_seniority && (
-                <span className="text-sm text-white/40">
-                  {job.parsed_seniority}
-                </span>
-              )}
+            <h1 className="font-heading font-bold text-4xl md:text-6xl uppercase tracking-tighter text-white mb-2">
+              {job.title}
+            </h1>
+            <div className="flex gap-4 text-zinc-500 font-mono text-xs uppercase tracking-widest">
+              {job.parsed_domain && <span>{job.parsed_domain}</span>}
+              {job.parsed_seniority && <span>{job.parsed_seniority}</span>}
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3 mt-6 md:mt-0">
             {job.status === "draft" && (
               <button
                 onClick={handleParse}
                 disabled={!!actionLoading}
-                className="px-4 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl text-sm font-medium hover:bg-blue-500/30 disabled:opacity-50 transition-colors"
+                className="btn-acid disabled:opacity-50"
               >
                 {actionLoading === "parse" ? "Parsing..." : "Parse JD"}
               </button>
@@ -161,18 +161,13 @@ export default function JobDetailPage() {
               <button
                 onClick={handleGenerateAssessment}
                 disabled={!!actionLoading}
-                className="px-4 py-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-sm font-medium hover:bg-emerald-500/30 disabled:opacity-50 transition-colors"
+                className="btn-acid disabled:opacity-50"
               >
-                {actionLoading === "generate"
-                  ? "Generating..."
-                  : "Generate Assessment"}
+                {actionLoading === "generate" ? "Generating..." : "Generate Assessment"}
               </button>
             )}
             {candidates.some((c) => c.status === "scored") && (
-              <Link
-                href={`/leaderboard/${jobId}`}
-                className="px-4 py-2 bg-brand-500/20 text-brand-400 border border-brand-500/30 rounded-xl text-sm font-medium hover:bg-brand-500/30 transition-colors"
-              >
+              <Link href={`/leaderboard/${jobId}`} className="btn-secondary">
                 View Leaderboard
               </Link>
             )}
@@ -181,15 +176,13 @@ export default function JobDetailPage() {
 
         {/* Parsed Skills */}
         {job.parsed_hard_skills && job.parsed_hard_skills.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-white/[0.08]">
-            <h3 className="text-sm font-medium text-white/50 mb-2">
-              Extracted Skills
-            </h3>
+          <div className="mt-6 pt-6 border-t border-white/5">
+            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3">Extracted Skills</div>
             <div className="flex flex-wrap gap-2">
               {job.parsed_hard_skills.map((skill, i) => (
                 <span
                   key={i}
-                  className="px-2 py-1 bg-brand-500/15 text-brand-300 rounded-lg text-xs font-medium"
+                  className="px-3 py-1 border border-acid/30 text-acid text-[10px] font-mono font-bold uppercase tracking-widest"
                 >
                   {skill}
                 </span>
@@ -201,32 +194,34 @@ export default function JobDetailPage() {
 
       {/* Assessment Section */}
       {assessments.length > 0 && (
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Assessment</h2>
+        <div>
+          <h2 className="font-heading font-bold text-3xl uppercase tracking-tight text-white mb-6">Assessment</h2>
           {assessments.map((assessment) => (
-            <div key={assessment.id}>
-              <div className="flex gap-4 text-sm text-white/40 mb-4">
+            <div key={assessment.id} className="card p-6">
+              <div className="flex gap-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-6">
                 <span>{assessment.total_questions} questions</span>
-                <span>{assessment.time_limit_minutes} min time limit</span>
+                <span className="text-acid">//</span>
+                <span>{assessment.time_limit_minutes} min</span>
+                <span className="text-acid">//</span>
                 <StatusBadge status={assessment.status} />
               </div>
               <div className="space-y-2">
                 {assessment.questions.map((q) => (
                   <div
                     key={q.id}
-                    className="p-3 bg-white/[0.04] rounded-xl flex items-start gap-3 border border-white/[0.06]"
+                    className="p-4 bg-[#080808] border border-white/5 flex items-start gap-3 hover:border-white/10 transition-colors"
                   >
-                    <span className="text-xs font-medium text-white/30 mt-0.5 shrink-0">
+                    <span className="text-[10px] font-mono font-bold text-zinc-600 mt-1 shrink-0">
                       Q{q.order_index + 1}
                     </span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <StatusBadge status={q.question_type} />
-                        <span className="text-xs text-white/30">
+                        <span className="text-[10px] font-mono text-zinc-600 uppercase">
                           {q.difficulty}
                         </span>
                       </div>
-                      <p className="text-sm text-white/70">{q.question_text}</p>
+                      <p className="text-sm text-zinc-300">{q.question_text}</p>
                     </div>
                   </div>
                 ))}
@@ -238,108 +233,78 @@ export default function JobDetailPage() {
 
       {/* Invite Candidates */}
       {job.status === "assessment_generated" && (
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Invite Candidates</h2>
-          <form onSubmit={handleInvite} className="flex gap-3 items-end">
-            <div className="flex-1">
-              <label className="label">
-                Name
-              </label>
-              <input
-                type="text"
-                value={inviteName}
-                onChange={(e) => setInviteName(e.target.value)}
-                className="input"
-                required
-              />
-            </div>
-            <div className="flex-1">
-              <label className="label">
-                Email
-              </label>
-              <input
-                type="email"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                className="input"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={!!actionLoading}
-              className="btn-primary text-sm"
-            >
-              {actionLoading === "invite" ? "Inviting..." : "Send Invite"}
-            </button>
-          </form>
+        <div>
+          <h2 className="font-heading font-bold text-3xl uppercase tracking-tight text-white mb-6">Invite Candidates</h2>
+          <div className="card p-6">
+            <form onSubmit={handleInvite} className="flex gap-4 items-end">
+              <div className="flex-1">
+                <label className="label">Name</label>
+                <input type="text" value={inviteName} onChange={(e) => setInviteName(e.target.value)} className="input" required />
+              </div>
+              <div className="flex-1">
+                <label className="label">Email</label>
+                <input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className="input" required />
+              </div>
+              <button type="submit" disabled={!!actionLoading} className="btn-acid">
+                {actionLoading === "invite" ? "Inviting..." : "Send Invite"}
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
       {/* Candidates List */}
       {candidates.length > 0 && (
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
+        <div>
+          <h2 className="font-heading font-bold text-3xl uppercase tracking-tight text-white mb-6">
             Candidates ({candidates.length})
           </h2>
-          <table className="w-full text-sm">
-            <thead className="border-b border-white/[0.08]">
-              <tr>
-                <th className="text-left px-3 py-2 font-medium text-white/40">
-                  Name
-                </th>
-                <th className="text-left px-3 py-2 font-medium text-white/40">
-                  Email
-                </th>
-                <th className="text-left px-3 py-2 font-medium text-white/40">
-                  Status
-                </th>
-                <th className="text-left px-3 py-2 font-medium text-white/40">
-                  Test Link
-                </th>
-                <th className="text-left px-3 py-2 font-medium text-white/40">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/[0.06]">
-              {candidates.map((c) => (
-                <tr key={c.id} className="hover:bg-white/[0.04] transition-colors">
-                  <td className="px-3 py-2 font-medium text-white">{c.name}</td>
-                  <td className="px-3 py-2 text-white/50">{c.email}</td>
-                  <td className="px-3 py-2">
-                    <StatusBadge status={c.status} />
-                  </td>
-                  <td className="px-3 py-2">
-                    <code className="text-xs bg-white/[0.06] text-white/50 px-2 py-1 rounded-lg select-all border border-white/[0.08]">
-                      /candidate?token={c.session_token.substring(0, 12)}...
-                    </code>
-                  </td>
-                  <td className="px-3 py-2">
-                    {c.status === "submitted" && (
-                      <button
-                        onClick={() => handleScore(c.id)}
-                        disabled={!!actionLoading}
-                        className="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-medium hover:bg-emerald-500/30 disabled:opacity-50 transition-colors"
-                      >
-                        {actionLoading === `score-${c.id}`
-                          ? "Scoring..."
-                          : "Score"}
-                      </button>
-                    )}
-                    {c.status === "scored" && (
-                      <Link
-                        href={`/recruiter/jobs/${jobId}/candidates/${c.id}`}
-                        className="px-3 py-1 bg-brand-500/20 text-brand-400 border border-brand-500/30 rounded-lg text-xs font-medium hover:bg-brand-500/30 transition-colors"
-                      >
-                        View Report
-                      </Link>
-                    )}
-                  </td>
+          <div className="border border-white/10 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="border-b border-white/10 bg-[#0A0A0A]">
+                <tr>
+                  <th className="text-left px-6 py-3 font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Name</th>
+                  <th className="text-left px-6 py-3 font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Email</th>
+                  <th className="text-left px-6 py-3 font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Status</th>
+                  <th className="text-left px-6 py-3 font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Test Link</th>
+                  <th className="text-left px-6 py-3 font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {candidates.map((c) => (
+                  <tr key={c.id} className="hover:bg-[#0C0C0C] transition-colors">
+                    <td className="px-6 py-3 font-heading font-bold uppercase text-white">{c.name}</td>
+                    <td className="px-6 py-3 text-zinc-500 font-mono text-xs">{c.email}</td>
+                    <td className="px-6 py-3"><StatusBadge status={c.status} /></td>
+                    <td className="px-6 py-3">
+                      <code className="text-[10px] bg-black border border-white/10 text-zinc-500 px-2 py-1 font-mono select-all">
+                        /candidate?token={c.session_token.substring(0, 12)}...
+                      </code>
+                    </td>
+                    <td className="px-6 py-3">
+                      {c.status === "submitted" && (
+                        <button
+                          onClick={() => handleScore(c.id)}
+                          disabled={!!actionLoading}
+                          className="px-3 py-1 bg-acid text-black text-[10px] font-mono font-bold uppercase hover:bg-white transition-colors disabled:opacity-50"
+                        >
+                          {actionLoading === `score-${c.id}` ? "Scoring..." : "Score"}
+                        </button>
+                      )}
+                      {c.status === "scored" && (
+                        <Link
+                          href={`/recruiter/jobs/${jobId}/candidates/${c.id}`}
+                          className="px-3 py-1 border border-acid/30 text-acid text-[10px] font-mono font-bold uppercase hover:bg-acid hover:text-black transition-colors"
+                        >
+                          View Report
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

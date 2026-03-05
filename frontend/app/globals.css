@@ -9,66 +9,61 @@
   }
 
   body {
-    @apply bg-[#0a0a0f] text-white;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    @apply bg-[#080808] text-[#F0F0F0];
+    font-family: "Inter", sans-serif;
   }
 
   ::selection {
-    @apply bg-brand-500/30 text-white;
+    background: #CCFF00;
+    color: black;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    @apply bg-[#080808];
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-white/10 rounded-full;
+    @apply bg-zinc-700;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-white/20;
+    background: #CCFF00;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.08] transition-all duration-300;
+    @apply bg-[#0C0C0C] border border-white/5 transition-all duration-300;
   }
   .card:hover {
-    @apply border-white/[0.14];
+    @apply border-white/10;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-brand-500 to-purple-500 text-white rounded-xl text-sm font-semibold
-           shadow-[0_0_20px_rgba(124,77,255,0.15)] hover:shadow-[0_0_30px_rgba(124,77,255,0.25)] hover:brightness-110
-           focus:outline-none focus:ring-2 focus:ring-brand-400/50
-           disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-white text-black font-heading font-bold text-sm uppercase tracking-wide
+           hover:bg-acid transition-colors
+           focus:outline-none focus:ring-2 focus:ring-acid/50
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-white/[0.06] border border-white/[0.1] text-white rounded-xl text-sm font-semibold
-           hover:bg-white/[0.1] hover:border-white/[0.2]
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 border border-white/20 text-white font-heading font-bold text-sm uppercase tracking-wide
+           hover:bg-acid hover:text-black hover:border-acid transition-colors
            focus:outline-none focus:ring-2 focus:ring-white/20
-           disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200;
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-sm font-semibold
-           hover:bg-red-500/30 hover:border-red-500/40
-           focus:outline-none focus:ring-2 focus:ring-red-500/30
-           disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200;
-  }
-  .btn-success {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl text-sm font-semibold
-           hover:bg-emerald-500/30 hover:border-emerald-500/40
-           focus:outline-none focus:ring-2 focus:ring-emerald-500/30
-           disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200;
+  .btn-acid {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-acid text-black font-heading font-bold text-sm uppercase tracking-wide
+           hover:bg-white transition-colors
+           focus:outline-none focus:ring-2 focus:ring-acid/50
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .input {
-    @apply w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder-white/30 px-4 py-2.5 text-sm
-           focus:outline-none focus:border-brand-400/50 focus:ring-2 focus:ring-brand-400/20 focus:bg-white/[0.07] transition-all duration-200;
+    @apply w-full bg-zinc-900 border border-white/10 text-white placeholder-zinc-600 px-4 py-2.5 text-sm font-mono
+           focus:outline-none focus:border-acid/50 focus:ring-1 focus:ring-acid/30 transition-all;
   }
   .label {
-    @apply block text-sm font-medium text-white/70 mb-1.5;
+    @apply block text-xs font-bold uppercase tracking-widest text-white mb-2;
   }
 }
 
@@ -77,16 +72,16 @@
     animation: fadeIn 0.5s ease-out forwards;
   }
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
-    to { opacity: 1; transform: translateY(0); filter: blur(0); }
-  }
-  .text-glow {
-    text-shadow: 0 0 20px rgba(124, 77, 255, 0.5), 0 0 40px rgba(124, 77, 255, 0.2);
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .bg-grid {
     background-image:
-      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
+      linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+  }
+  .text-acid {
+    color: #CCFF00;
   }
 }
