@@ -10,9 +10,11 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://beatclaude:beatclaude@localhost:5432/beatclaude"
     DATABASE_URL_SYNC: str = "postgresql://beatclaude:beatclaude@localhost:5432/beatclaude"
 
+    ANTHROPIC_API_KEY: str = ""
+    LLM_PROVIDER: str = "anthropic"
     OPENAI_API_KEY: str = ""
     OPENAI_BASE_URL: str = "https://api.openai.com/v1"
-    LLM_MODEL: str = "gpt-4o"
+    LLM_MODEL: str = "claude-sonnet-4-20250514"
     LLM_TEMPERATURE: float = 0.0
     LLM_MAX_TOKENS: int = 4096
 
