@@ -1,7 +1,10 @@
 import json
+import logging
 import time
 from openai import AsyncOpenAI
 from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = logging.getLogger(__name__)
 from app.core.config import get_settings
 from app.models.prompt_log import PromptLog
 
@@ -327,16 +330,34 @@ async def llm_call(
             await db.flush()
             return result
 
-    response = await client.chat.completions.create(
-        model=settings.LLM_MODEL,
-        temperature=settings.LLM_TEMPERATURE,
-        max_tokens=max_tokens or settings.LLM_MAX_TOKENS,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        response_format={"type": "json_object"},
-    )
+    try:
+        response = await client.chat.completions.create(
+            model=settings.LLM_MODEL,
+            temperature=settings.LLM_TEMPERATURE,
+            max_tokens=max_tokens or settings.LLM_MAX_TOKENS,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            response_format={"type": "json_object"},
+        )
+    except Exception as e:
+        logger.warning("OpenAI API call failed (%s), falling back to mock mode", e)
+        handler = MOCK_HANDLERS.get(prompt_name)
+        if handler:
+            result = handler(user_prompt)
+            elapsed_ms = int((time.monotonic() - start_time) * 1000)
+            raw_output = json.dumps(result)
+            log = PromptLog(
+                prompt_name=prompt_name, prompt_version=prompt_version,
+                model="mock-fallback", temperature=0,
+                input_text=user_prompt[:10000], output_text=raw_output[:10000],
+                tokens_used=0, latency_ms=elapsed_ms,
+            )
+            db.add(log)
+            await db.flush()
+            return result
+        raise
 
     elapsed_ms = int((time.monotonic() - start_time) * 1000)
     raw_output = response.choices[0].message.content
@@ -388,15 +409,33 @@ async def llm_call_raw(
             await db.flush()
             return raw_output
 
-    response = await client.chat.completions.create(
-        model=settings.LLM_MODEL,
-        temperature=settings.LLM_TEMPERATURE,
-        max_tokens=max_tokens or settings.LLM_MAX_TOKENS,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-    )
+    try:
+        response = await client.chat.completions.create(
+            model=settings.LLM_MODEL,
+            temperature=settings.LLM_TEMPERATURE,
+            max_tokens=max_tokens or settings.LLM_MAX_TOKENS,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+        )
+    except Exception as e:
+        logger.warning("OpenAI API call failed (%s), falling back to mock mode", e)
+        handler = MOCK_HANDLERS.get(prompt_name)
+        if handler:
+            result = handler(user_prompt)
+            raw_output = json.dumps(result) if isinstance(result, (dict, list)) else str(result)
+            elapsed_ms = int((time.monotonic() - start_time) * 1000)
+            log = PromptLog(
+                prompt_name=prompt_name, prompt_version=prompt_version,
+                model="mock-fallback", temperature=0,
+                input_text=user_prompt[:10000], output_text=raw_output[:10000],
+                tokens_used=0, latency_ms=elapsed_ms,
+            )
+            db.add(log)
+            await db.flush()
+            return raw_output
+        raise
 
     elapsed_ms = int((time.monotonic() - start_time) * 1000)
     raw_output = response.choices[0].message.content
