@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 PROMPT_VERSIONS: dict[str, str] = {}
 
 JD_PARSE_PROMPT_VERSION = "v1.0"
