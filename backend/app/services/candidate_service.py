@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 from datetime import datetime
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.candidate import Candidate, CandidateStatus
@@ -46,7 +47,7 @@ async def invite_candidate(invite: CandidateInvite, db: AsyncSession) -> Candida
     return candidate
 
 
-async def start_test(session_token: str, ip_address: str | None, db: AsyncSession) -> CandidateTestView:
+async def start_test(session_token: str, ip_address: Optional[str], db: AsyncSession) -> CandidateTestView:
     result = await db.execute(
         select(Candidate).where(Candidate.session_token == session_token)
     )

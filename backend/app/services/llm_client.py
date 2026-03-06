@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import time
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import get_settings
 from app.models.prompt_log import PromptLog
@@ -170,7 +171,7 @@ async def _log_and_return_mock(prompt_name, prompt_version, user_prompt, start_t
 
 
 async def llm_call(
-    system_prompt: str, user_prompt: str, prompt_name: str, prompt_version: str, db: AsyncSession, max_tokens: int | None = None,
+    system_prompt: str, user_prompt: str, prompt_name: str, prompt_version: str, db: AsyncSession, max_tokens: Optional[int] = None,
 ) -> dict:
     start_time = time.monotonic()
     if _is_mock_mode():
@@ -196,7 +197,7 @@ async def llm_call(
 
 
 async def llm_call_raw(
-    system_prompt: str, user_prompt: str, prompt_name: str, prompt_version: str, db: AsyncSession, max_tokens: int | None = None,
+    system_prompt: str, user_prompt: str, prompt_name: str, prompt_version: str, db: AsyncSession, max_tokens: Optional[int] = None,
 ) -> str:
     start_time = time.monotonic()
     if _is_mock_mode():

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import datetime
@@ -16,8 +17,8 @@ class QuestionGenerated(BaseModel):
     question_id: int
     type: str
     question_text: str
-    options: list[str] | None = None
-    correct_option_index: int | None = None
+    options: Optional[List[str]] = None
+    correct_option_index: Optional[int] = None
     ideal_answer: str
     scoring_rubric: ScoringRubric
     skill_tags: list[str]
@@ -47,10 +48,10 @@ class QuestionResponse(BaseModel):
     order_index: int
     question_type: str
     question_text: str
-    options: list[str] | None
+    options: Optional[List[str]]
     max_score: float
     difficulty: str
-    skill_tags: list[str] | None
+    skill_tags: Optional[List[str]]
 
     class Config:
         from_attributes = True
@@ -58,7 +59,7 @@ class QuestionResponse(BaseModel):
 
 class QuestionDetailResponse(QuestionResponse):
     ideal_answer: str
-    correct_option_index: int | None
+    correct_option_index: Optional[int]
     scoring_rubric_accuracy_weight: float
     scoring_rubric_depth_weight: float
     scoring_rubric_practical_weight: float

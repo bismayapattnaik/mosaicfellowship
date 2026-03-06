@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import datetime
@@ -18,7 +19,7 @@ class CandidateBulkInvite(BaseModel):
 
 class CandidateStartTest(BaseModel):
     session_token: str
-    ip_address: str | None = None
+    ip_address: Optional[str] = None
 
 
 class CandidateResponse(BaseModel):
@@ -28,8 +29,8 @@ class CandidateResponse(BaseModel):
     name: str
     session_token: str
     status: str
-    started_at: datetime | None
-    submitted_at: datetime | None
+    started_at: Optional[datetime]
+    submitted_at: Optional[datetime]
     copy_paste_detected: bool
     created_at: datetime
 
@@ -39,8 +40,8 @@ class CandidateResponse(BaseModel):
 
 class AnswerSubmission(BaseModel):
     question_id: UUID
-    answer_text: str | None = None
-    selected_option_index: int | None = None
+    answer_text: Optional[str] = None
+    selected_option_index: Optional[int] = None
     time_spent_seconds: int = 0
 
 
@@ -61,7 +62,7 @@ class CandidateTestView(BaseModel):
     job_title: str
     time_limit_minutes: int
     questions: list["TestQuestionView"]
-    started_at: datetime | None
+    started_at: Optional[datetime]
 
 
 class TestQuestionView(BaseModel):
@@ -69,7 +70,7 @@ class TestQuestionView(BaseModel):
     order_index: int
     question_type: str
     question_text: str
-    options: list[str] | None
+    options: Optional[List[str]]
     max_score: float
 
     class Config:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import Optional
 from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -27,11 +28,11 @@ class Candidate(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     session_token: Mapped[str] = mapped_column(String(128), unique=True, nullable=False, index=True)
     status: Mapped[CandidateStatus] = mapped_column(SAEnum(CandidateStatus, values_callable=lambda x: [e.value for e in x]), default=CandidateStatus.INVITED, nullable=False)
-    ip_hash: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    started_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    submitted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    ip_hash: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    started_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    submitted_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     copy_paste_detected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    question_order: Mapped[str | None] = mapped_column(String(1000), nullable=True)  # Stored as comma-separated UUIDs
+    question_order: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)  # Stored as comma-separated UUIDs
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     job = relationship("Job", back_populates="candidates", lazy="selectin")

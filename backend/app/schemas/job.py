@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import datetime
@@ -27,14 +28,14 @@ class JobResponse(BaseModel):
     recruiter_id: UUID
     title: str
     jd_text: str
-    parsed_role_title: str | None
-    parsed_seniority: str | None
-    parsed_domain: str | None
-    parsed_experience_range: str | None
-    parsed_hard_skills: list[str] | None
-    parsed_soft_skills: list[str] | None
-    parsed_responsibilities: list[str] | None
-    parsed_evaluation_priority: list[str] | None
+    parsed_role_title: Optional[str]
+    parsed_seniority: Optional[str]
+    parsed_domain: Optional[str]
+    parsed_experience_range: Optional[str]
+    parsed_hard_skills: Optional[List[str]]
+    parsed_soft_skills: Optional[List[str]]
+    parsed_responsibilities: Optional[List[str]]
+    parsed_evaluation_priority: Optional[List[str]]
     status: str
     created_at: datetime
 

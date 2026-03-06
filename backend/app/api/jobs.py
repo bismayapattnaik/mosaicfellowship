@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from typing import Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -25,7 +28,7 @@ async def create_job(payload: JobCreate, db: AsyncSession = Depends(get_db)):
 
 @router.get("", response_model=JobListResponse)
 async def list_jobs(
-    recruiter_id: UUID | None = None,
+    recruiter_id: Optional[UUID] = None,
     db: AsyncSession = Depends(get_db),
 ):
     query = select(Job)

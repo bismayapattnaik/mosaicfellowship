@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.models.candidate import Candidate, CandidateStatus
@@ -14,7 +15,7 @@ async def get_leaderboard(
     job_id: str,
     db: AsyncSession,
     sort_by: str = "overall_score",
-    filter_recommendation: str | None = None,
+    filter_recommendation: Optional[str] = None,
 ) -> LeaderboardResponse:
     result = await db.execute(select(Job).where(Job.id == job_id))
     job = result.scalar_one_or_none()

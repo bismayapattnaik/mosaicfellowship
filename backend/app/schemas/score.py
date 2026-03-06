@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Optional
 from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import datetime
@@ -39,8 +40,8 @@ class LeaderboardEntry(BaseModel):
     confidence: float
     strengths: list[str]
     weaknesses: list[str]
-    submitted_at: datetime | None
-    override_recommendation: str | None = None
+    submitted_at: Optional[datetime]
+    override_recommendation: Optional[str] = None
     time_spent_total: int = 0
 
     class Config:

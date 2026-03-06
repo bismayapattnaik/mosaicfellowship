@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import Optional
 from sqlalchemy import String, Integer, Float, Text, DateTime, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -25,15 +26,15 @@ class Question(Base):
     order_index: Mapped[int] = mapped_column(Integer, nullable=False)
     question_type: Mapped[QuestionType] = mapped_column(SAEnum(QuestionType, values_callable=lambda x: [e.value for e in x]), nullable=False)
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
-    options: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # For MCQ: list of option strings
-    correct_option_index: Mapped[int | None] = mapped_column(Integer, nullable=True)  # For MCQ
+    options: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # For MCQ: list of option strings
+    correct_option_index: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # For MCQ
     ideal_answer: Mapped[str] = mapped_column(Text, nullable=False)
     scoring_rubric_accuracy_weight: Mapped[float] = mapped_column(Float, default=0.4, nullable=False)
     scoring_rubric_depth_weight: Mapped[float] = mapped_column(Float, default=0.3, nullable=False)
     scoring_rubric_practical_weight: Mapped[float] = mapped_column(Float, default=0.2, nullable=False)
     scoring_rubric_communication_weight: Mapped[float] = mapped_column(Float, default=0.1, nullable=False)
     max_score: Mapped[float] = mapped_column(Float, default=100.0, nullable=False)
-    skill_tags: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    skill_tags: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     difficulty: Mapped[str] = mapped_column(String(50), default="medium", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 

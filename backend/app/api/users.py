@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -88,7 +89,7 @@ async def get_user_stats(user_id: UUID, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("", response_model=list[UserResponse])
-async def list_users(role: str | None = None, db: AsyncSession = Depends(get_db)):
+async def list_users(role: Optional[str] = None, db: AsyncSession = Depends(get_db)):
     query = select(User)
     if role:
         query = query.where(User.role == UserRole(role))
