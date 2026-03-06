@@ -40,37 +40,38 @@ async def health_check():
 FRONTEND_URL = "http://localhost:3000"
 
 
-@app.api_route("/{path:path}", methods=["GET", "HEAD"])
-async def proxy_frontend(request: Request, path: str):
-    async with httpx.AsyncClient() as client:
-        url = f"{FRONTEND_URL}/{path}"
-        headers = {k: v for k, v in request.headers.items() if k.lower() not in ("host",)}
-        resp = await client.request(
-            method=request.method,
-            url=url,
-            headers=headers,
-            params=request.query_params,
-            follow_redirects=True,
-        )
-        return StreamingResponse(
-            content=iter([resp.content]),
-            status_code=resp.status_code,
-            headers={k: v for k, v in resp.headers.items() if k.lower() not in ("transfer-encoding", "content-encoding")},
+async def _proxy_to_frontend(request: Request, path: str = ""):
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            url = f"{FRONTEND_URL}/{path}"
+            headers = {k: v for k, v in request.headers.items() if k.lower() not in ("host",)}
+            resp = await client.request(
+                method=request.method,
+                url=url,
+                headers=headers,
+                params=request.query_params,
+                follow_redirects=True,
+            )
+            return StreamingResponse(
+                content=iter([resp.content]),
+                status_code=resp.status_code,
+                headers={k: v for k, v in resp.headers.items() if k.lower() not in ("transfer-encoding", "content-encoding")},
+            )
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        from fastapi.responses import HTMLResponse
+        return HTMLResponse(
+            content="<h2>Frontend not running</h2><p>Start the Next.js frontend on port 3000:</p>"
+            "<pre>cd ~/mosaicfellowship/frontend && npm run dev</pre>"
+            "<p>Backend API is working fine at <a href='/docs'>/docs</a></p>",
+            status_code=503,
         )
 
 
 @app.get("/")
 async def proxy_frontend_root(request: Request):
-    async with httpx.AsyncClient() as client:
-        headers = {k: v for k, v in request.headers.items() if k.lower() not in ("host",)}
-        resp = await client.get(
-            FRONTEND_URL,
-            headers=headers,
-            params=request.query_params,
-            follow_redirects=True,
-        )
-        return StreamingResponse(
-            content=iter([resp.content]),
-            status_code=resp.status_code,
-            headers={k: v for k, v in resp.headers.items() if k.lower() not in ("transfer-encoding", "content-encoding")},
-        )
+    return await _proxy_to_frontend(request)
+
+
+@app.api_route("/{path:path}", methods=["GET", "HEAD"])
+async def proxy_frontend(request: Request, path: str):
+    return await _proxy_to_frontend(request, path)
