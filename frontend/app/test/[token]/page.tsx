@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useParams } from "next/navigation";
 import {
   startTest,
   autosaveAnswers,
@@ -10,42 +10,11 @@ import {
 } from "@/lib/api";
 import type { CandidateTestView, TestQuestion, AnswerSubmission } from "@/lib/types";
 
-export default function CandidateTestPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#080808]"><p className="text-zinc-500 font-mono text-xs uppercase tracking-widest animate-pulse">Loading...</p></div>}>
-      <CandidateTestRedirectOrContent />
-    </Suspense>
-  );
-}
+export default function CandidateTestPortal() {
+  const params = useParams();
+  const token = params.token as string;
 
-function CandidateTestRedirectOrContent() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token") || "";
-
-  // If token is in URL, redirect to the new dedicated portal
-  useEffect(() => {
-    if (token) {
-      window.location.href = `/test/${token}`;
-    }
-  }, [token]);
-
-  if (token) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#080808]">
-        <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest animate-pulse">Redirecting to test portal...</p>
-      </div>
-    );
-  }
-
-  return <CandidateTestContent />;
-}
-
-function CandidateTestContent() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token") || "";
-
-  const [phase, setPhase] = useState<"enter" | "instructions" | "test" | "submitted">("enter");
-  const [sessionToken, setSessionToken] = useState(token);
+  const [phase, setPhase] = useState<"loading" | "instructions" | "test" | "submitted" | "error">("loading");
   const [testData, setTestData] = useState<CandidateTestView | null>(null);
   const [answers, setAnswers] = useState<Record<string, AnswerSubmission>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -58,17 +27,39 @@ function CandidateTestContent() {
   const questionStartTime = useRef<number>(Date.now());
 
   const doAutosave = useCallback(async () => {
-    if (!sessionToken || Object.keys(answers).length === 0) return;
+    if (!token || Object.keys(answers).length === 0) return;
     try {
       await autosaveAnswers({
-        session_token: sessionToken,
+        session_token: token,
         answers: Object.values(answers),
       });
     } catch {
-      // Autosave failures are silent
+      // Silent
     }
-  }, [sessionToken, answers]);
+  }, [token, answers]);
 
+  // Initial load - verify token
+  useEffect(() => {
+    async function verify() {
+      try {
+        const candidate = (await getCandidateBySession(token)) as any;
+        if (candidate.status === "submitted" || candidate.status === "scored") {
+          setPhase("submitted");
+        } else if (candidate.status === "in_progress") {
+          // Already started, resume test
+          await handleBeginTest();
+        } else {
+          setPhase("instructions");
+        }
+      } catch (err: any) {
+        setError(err.message || "Invalid or expired test link");
+        setPhase("error");
+      }
+    }
+    if (token) verify();
+  }, [token]);
+
+  // Autosave
   useEffect(() => {
     if (phase !== "test") return;
     autosaveRef.current = setInterval(doAutosave, 10000);
@@ -77,6 +68,7 @@ function CandidateTestContent() {
     };
   }, [phase, doAutosave]);
 
+  // Timer
   useEffect(() => {
     if (phase !== "test" || timeRemaining <= 0) return;
     timerRef.current = setInterval(() => {
@@ -93,32 +85,11 @@ function CandidateTestContent() {
     };
   }, [phase]);
 
-  async function handleStartFlow() {
-    if (!sessionToken) {
-      setError("Please enter your session token");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const candidate = (await getCandidateBySession(sessionToken)) as any;
-      if (candidate.status === "submitted" || candidate.status === "scored") {
-        setPhase("submitted");
-        return;
-      }
-      setPhase("instructions");
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleBeginTest() {
     setLoading(true);
     setError("");
     try {
-      const data = (await startTest(sessionToken)) as CandidateTestView;
+      const data = (await startTest(token)) as CandidateTestView;
       setTestData(data);
       setTimeRemaining(data.time_limit_minutes * 60);
       questionStartTime.current = Date.now();
@@ -138,8 +109,7 @@ function CandidateTestContent() {
     const submission: AnswerSubmission = {
       question_id: question.id,
       answer_text: question.question_type === "mcq" ? null : (value as string),
-      selected_option_index:
-        question.question_type === "mcq" ? (value as number) : null,
+      selected_option_index: question.question_type === "mcq" ? (value as number) : null,
       time_spent_seconds: timeSpent,
     };
 
@@ -154,7 +124,7 @@ function CandidateTestContent() {
     setError("");
     try {
       await submitTest({
-        session_token: sessionToken,
+        session_token: token,
         answers: Object.values(answers),
         copy_paste_detected: copyPasteDetected,
       });
@@ -176,39 +146,35 @@ function CandidateTestContent() {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
-  // --- ENTER TOKEN ---
-  if (phase === "enter") {
+  // --- LOADING ---
+  if (phase === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#080808] bg-grid p-8">
-        <div className="relative max-w-md w-full card p-8">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="bg-acid text-black px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest">
-              Assessment Portal
-            </div>
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-2 border-acid border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest">Verifying your test link...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // --- ERROR ---
+  if (phase === "error") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#080808] bg-grid p-8">
+        <div className="relative max-w-md w-full card p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 border-2 border-red-500/50 flex items-center justify-center">
+            <span className="text-red-400 text-3xl font-heading font-bold">!</span>
           </div>
-          <h1 className="font-heading font-bold text-4xl uppercase tracking-tighter text-white mb-2">
-            Beat Claude
+          <h1 className="font-heading font-bold text-3xl uppercase tracking-tighter text-white mb-2">
+            Invalid Link
           </h1>
-          <p className="text-zinc-500 text-sm font-mono mb-6">Enter your session token to begin</p>
-          {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-              {error}
-            </div>
-          )}
-          <input
-            type="text"
-            value={sessionToken}
-            onChange={(e) => setSessionToken(e.target.value)}
-            placeholder="SESSION TOKEN"
-            className="input mb-4"
-          />
-          <button
-            onClick={handleStartFlow}
-            disabled={loading}
-            className="btn-acid w-full"
-          >
-            {loading ? "Verifying..." : "Continue"}
-          </button>
+          <p className="text-zinc-500 text-sm font-mono mb-4">
+            {error || "This test link is invalid or has expired. Please contact your recruiter."}
+          </p>
+          <a href="/" className="text-acid text-xs font-mono uppercase hover:underline">
+            Go to Homepage
+          </a>
         </div>
       </div>
     );
@@ -219,9 +185,20 @@ function CandidateTestContent() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#080808] bg-grid p-8">
         <div className="relative max-w-lg w-full card p-8">
-          <h1 className="font-heading font-bold text-4xl uppercase tracking-tighter text-white mb-6">
-            Instructions
+          <div className="flex items-center gap-2 mb-6">
+            <div className="bg-acid text-black px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest">
+              Assessment Portal
+            </div>
+          </div>
+          <h1 className="font-heading font-bold text-4xl uppercase tracking-tighter text-white mb-2">
+            Beat Claude
           </h1>
+          <p className="text-zinc-500 text-sm font-mono mb-6">Welcome! Please read the instructions before starting.</p>
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
           <ul className="space-y-3 text-sm text-zinc-400 mb-8 font-mono">
             <li className="flex gap-3">
               <span className="text-acid font-bold">01</span>
@@ -262,7 +239,7 @@ function CandidateTestContent() {
       <div className="min-h-screen flex items-center justify-center bg-[#080808] bg-grid p-8">
         <div className="relative max-w-md w-full card p-8 text-center">
           <div className="w-16 h-16 mx-auto mb-4 border-2 border-acid flex items-center justify-center">
-            <span className="text-acid text-3xl font-heading font-bold">✓</span>
+            <span className="text-acid text-3xl font-heading font-bold">&#10003;</span>
           </div>
           <h1 className="font-heading font-bold text-4xl uppercase tracking-tighter text-white mb-2">
             Submitted
@@ -303,9 +280,7 @@ function CandidateTestContent() {
               {answeredCount}/{questions.length}
             </div>
             <div
-              className={`text-lg font-mono font-bold ${
-                isLowTime ? "text-red-400 animate-pulse" : "text-acid"
-              }`}
+              className={`text-lg font-mono font-bold ${isLowTime ? "text-red-400 animate-pulse" : "text-acid"}`}
             >
               {formatTime(timeRemaining)}
             </div>
@@ -322,10 +297,7 @@ function CandidateTestContent() {
 
       {/* Progress */}
       <div className="w-full h-0.5 bg-white/5">
-        <div
-          className="h-full bg-acid transition-all"
-          style={{ width: `${progress}%` }}
-        />
+        <div className="h-full bg-acid transition-all" style={{ width: `${progress}%` }} />
       </div>
 
       {error && (
@@ -351,31 +323,29 @@ function CandidateTestContent() {
           </p>
 
           {/* MCQ Options */}
-          {currentQuestion.question_type === "mcq" &&
-            currentQuestion.options && (
-              <div className="space-y-3">
-                {currentQuestion.options.map((opt, idx) => {
-                  const selected =
-                    answers[currentQuestion.id]?.selected_option_index === idx;
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => updateAnswer(currentQuestion, idx)}
-                      className={`w-full text-left p-4 border transition-all ${
-                        selected
-                          ? "border-acid bg-acid/5"
-                          : "border-white/10 hover:border-white/20 bg-[#080808]"
-                      }`}
-                    >
-                      <span className={`font-mono font-bold mr-3 ${selected ? "text-acid" : "text-zinc-600"}`}>
-                        {String.fromCharCode(65 + idx)}.
-                      </span>
-                      <span className="text-zinc-300">{opt}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+          {currentQuestion.question_type === "mcq" && currentQuestion.options && (
+            <div className="space-y-3">
+              {currentQuestion.options.map((opt, idx) => {
+                const selected = answers[currentQuestion.id]?.selected_option_index === idx;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => updateAnswer(currentQuestion, idx)}
+                    className={`w-full text-left p-4 border transition-all ${
+                      selected
+                        ? "border-acid bg-acid/5"
+                        : "border-white/10 hover:border-white/20 bg-[#080808]"
+                    }`}
+                  >
+                    <span className={`font-mono font-bold mr-3 ${selected ? "text-acid" : "text-zinc-600"}`}>
+                      {String.fromCharCode(65 + idx)}.
+                    </span>
+                    <span className="text-zinc-300">{opt}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Text Answer */}
           {currentQuestion.question_type !== "mcq" && (
@@ -402,7 +372,7 @@ function CandidateTestContent() {
             Previous
           </button>
 
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap justify-center">
             {questions.map((q, idx) => (
               <button
                 key={q.id}
@@ -426,9 +396,7 @@ function CandidateTestContent() {
           <button
             onClick={() => {
               questionStartTime.current = Date.now();
-              setCurrentIndex((prev) =>
-                Math.min(questions.length - 1, prev + 1)
-              );
+              setCurrentIndex((prev) => Math.min(questions.length - 1, prev + 1));
             }}
             disabled={currentIndex === questions.length - 1}
             className="btn-acid text-xs disabled:opacity-30"

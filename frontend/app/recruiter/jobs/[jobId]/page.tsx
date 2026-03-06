@@ -13,7 +13,60 @@ import {
   scoreCandidate,
 } from "@/lib/api";
 import StatusBadge from "@/components/StatusBadge";
-import type { Job, Assessment, Candidate } from "@/lib/types";
+import type { Job, Assessment, Candidate, Question } from "@/lib/types";
+
+function QuestionCard({ q, index }: { q: Question; index: number }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="bg-[#080808] border border-white/5 hover:border-white/10 transition-colors">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full text-left p-4 flex items-start gap-3"
+      >
+        <span className="text-[10px] font-mono font-bold text-zinc-600 mt-1 shrink-0">
+          Q{index + 1}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <StatusBadge status={q.question_type} />
+            <span className="text-[10px] font-mono text-zinc-600 uppercase">
+              {q.difficulty}
+            </span>
+          </div>
+          <p className={`text-sm text-zinc-300 ${expanded ? "" : "line-clamp-2"}`}>
+            {q.question_text}
+          </p>
+        </div>
+        <span className="text-zinc-600 shrink-0 mt-1 text-xs transition-transform duration-200" style={{ transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }}>
+          ▼
+        </span>
+      </button>
+      {expanded && (
+        <div className="px-4 pb-4 ml-10 border-t border-white/5 pt-3 space-y-3">
+          <p className="text-sm text-zinc-300 whitespace-pre-wrap">{q.question_text}</p>
+          {q.options && q.options.length > 0 && (
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Options</span>
+              {q.options.map((opt, i) => (
+                <div key={i} className="flex items-start gap-2 text-sm text-zinc-400 pl-2">
+                  <span className="font-mono font-bold text-zinc-600 shrink-0">{String.fromCharCode(65 + i)}.</span>
+                  <span>{opt}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {q.skill_tags && q.skill_tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-1">
+              {q.skill_tags.map((tag, i) => (
+                <span key={i} className="px-2 py-0.5 border border-acid/20 text-acid text-[9px] font-mono uppercase">{tag}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function JobDetailPage() {
   const params = useParams();
@@ -23,6 +76,7 @@ export default function JobDetailPage() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteName, setInviteName] = useState("");
+  const [lastInvitedLink, setLastInvitedLink] = useState("");
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState("");
   const [error, setError] = useState("");
@@ -81,15 +135,18 @@ export default function JobDetailPage() {
     e.preventDefault();
     setActionLoading("invite");
     setError("");
+    setLastInvitedLink("");
     try {
-      await inviteCandidate({
+      const result = (await inviteCandidate({
         job_id: jobId,
         email: inviteEmail,
         name: inviteName,
-      });
+      })) as Candidate;
+      const testUrl = `${window.location.origin}/test/${result.session_token}`;
+      setLastInvitedLink(testUrl);
       setInviteEmail("");
       setInviteName("");
-      setSuccess("Candidate invited!");
+      setSuccess(`Candidate invited! Share this test link with ${result.name}`);
       await loadData();
     } catch (err: any) {
       setError(err.message);
@@ -207,23 +264,7 @@ export default function JobDetailPage() {
               </div>
               <div className="space-y-2">
                 {assessment.questions.map((q) => (
-                  <div
-                    key={q.id}
-                    className="p-4 bg-[#080808] border border-white/5 flex items-start gap-3 hover:border-white/10 transition-colors"
-                  >
-                    <span className="text-[10px] font-mono font-bold text-zinc-600 mt-1 shrink-0">
-                      Q{q.order_index + 1}
-                    </span>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <StatusBadge status={q.question_type} />
-                        <span className="text-[10px] font-mono text-zinc-600 uppercase">
-                          {q.difficulty}
-                        </span>
-                      </div>
-                      <p className="text-sm text-zinc-300">{q.question_text}</p>
-                    </div>
-                  </div>
+                  <QuestionCard key={q.id} q={q} index={q.order_index} />
                 ))}
               </div>
             </div>
@@ -249,6 +290,25 @@ export default function JobDetailPage() {
                 {actionLoading === "invite" ? "Inviting..." : "Send Invite"}
               </button>
             </form>
+            <p className="text-[10px] font-mono text-zinc-600 mt-3">
+              Note: No email is sent automatically. After inviting, copy the test link from the candidates table below and share it manually.
+            </p>
+            {lastInvitedLink && (
+              <div className="mt-4 p-4 bg-acid/5 border border-acid/20 flex items-center gap-3">
+                <span className="text-acid text-[10px] font-mono font-bold uppercase shrink-0">Test Link:</span>
+                <code className="text-xs font-mono text-zinc-300 truncate flex-1">{lastInvitedLink}</code>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(lastInvitedLink);
+                    setSuccess("Test link copied to clipboard!");
+                    setTimeout(() => setSuccess(""), 2000);
+                  }}
+                  className="px-3 py-1 bg-acid text-black text-[10px] font-mono font-bold uppercase hover:bg-white transition-colors shrink-0"
+                >
+                  Copy Link
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -277,9 +337,22 @@ export default function JobDetailPage() {
                     <td className="px-6 py-3 text-zinc-500 font-mono text-xs">{c.email}</td>
                     <td className="px-6 py-3"><StatusBadge status={c.status} /></td>
                     <td className="px-6 py-3">
-                      <code className="text-[10px] bg-black border border-white/10 text-zinc-500 px-2 py-1 font-mono select-all">
-                        /candidate?token={c.session_token.substring(0, 12)}...
-                      </code>
+                      <div className="flex items-center gap-2">
+                        <code className="text-[10px] bg-black border border-white/10 text-zinc-500 px-2 py-1 font-mono truncate max-w-[180px]">
+                          {typeof window !== "undefined" ? `${window.location.origin}/test/${c.session_token}` : `/test/${c.session_token}`}
+                        </code>
+                        <button
+                          onClick={() => {
+                            const url = `${window.location.origin}/test/${c.session_token}`;
+                            navigator.clipboard.writeText(url);
+                            setSuccess("Test link copied!");
+                            setTimeout(() => setSuccess(""), 2000);
+                          }}
+                          className="px-2 py-1 border border-white/10 text-zinc-500 text-[10px] font-mono uppercase hover:text-acid hover:border-acid/30 transition-colors shrink-0"
+                        >
+                          Copy
+                        </button>
+                      </div>
                     </td>
                     <td className="px-6 py-3">
                       {c.status === "submitted" && (
